@@ -1,0 +1,54 @@
+Role based api access
+
+Request
+↓
+authMiddleware (is user logged in?)
+↓
+adminMiddleware (is user admin?)
+↓
+Admin route
+
+
+
+
+To create a admin 
+✅ OPTION 1: MongoDB Compass
+
+In MongoDB Compass:
+Open your database
+Open users collection
+Find your user
+Edit:
+"role": "admin"
+
+
+Save
+✅ OPTION 2: MongoDB Shell (Terminal)
+
+This is where that code is actually written.
+
+Steps:
+1️⃣ Open terminal
+mongosh
+
+(or if using Atlas, connect using the connection string)
+
+2️⃣ Select database
+use yourDatabaseName
+
+Example:
+use Node-API
+
+3️⃣ Run update command
+db.users.updateOne(
+  { email: "youremail@gmail.com" },
+  { $set: { role: "admin" } }
+)
+
+❗ This runs INSIDE MongoDB
+
+Not inside:
+Express
+Controllers
+Routes
+Models

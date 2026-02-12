@@ -1,0 +1,175 @@
+====================================================
+E-COMMERCE BACKEND – LOGIC FLOW REFERENCE
+====================================================
+
+----------------------------------------------------
+AUTHENTICATION FLOW
+----------------------------------------------------
+
+SEND OTP (Signup Step 1)
+----------------------------------------------------
+1. Client sends email + password
+2. Backend generates OTP
+3. Backend hashes password
+4. Backend deletes old OTPs for this email
+5. Backend saves new OTP + hashed password + expiry
+6. Backend sends OTP via email
+7. Response: "OTP sent"
+
+VERIFY OTP (Signup Step 2)
+----------------------------------------------------
+1. Client sends email + otp
+2. Backend checks if user already exists
+   - If yes → error
+3. Backend finds OTP record
+   - If not found → invalid OTP
+   - If expired → error
+4. Backend creates User using stored hashed password
+5. Backend deletes OTP record
+6. Response: "User created"
+
+LOGIN
+----------------------------------------------------
+1. Client sends email + password
+2. Backend finds user by email
+   - If not found → error
+3. Backend compares password using bcrypt
+   - If mismatch → error
+4. Backend generates JWT with userId
+5. Response: token
+
+AUTH MIDDLEWARE
+----------------------------------------------------
+1. Read Authorization header
+2. Check "Bearer <token>" format
+3. Verify token using JWT secret
+   - If invalid / expired → error
+4. Extract userId from token
+5. Attach to request:
+   req.user = { id: userId }
+6. Call next() to continue
+
+----------------------------------------------------
+PRODUCT & CATEGORY FLOW
+----------------------------------------------------
+
+CREATE CATEGORY
+----------------------------------------------------
+1. Client sends category data
+2. Backend saves category
+3. Response: category created
+
+GET CATEGORIES
+----------------------------------------------------
+1. Backend fetches all categories
+2. Response: category list
+
+CREATE PRODUCT
+----------------------------------------------------
+1. Client sends product data + categoryId
+2. Backend saves product with category reference
+3. Response: product created
+
+GET PRODUCTS (Listing)
+----------------------------------------------------
+1. Read query params:
+   - category
+   - minPrice / maxPrice
+   - sort
+   - page
+   - limit
+2. Build MongoDB filter object
+3. Apply sorting
+4. Apply pagination (skip + limit)
+5. Populate category
+6. Response: products + metadata
+
+----------------------------------------------------
+CART FLOW
+----------------------------------------------------
+
+GENERAL CART RULES
+----------------------------------------------------
+- One cart per user
+- Cart belongs to logged-in user only
+- Frontend sends productId + quantity
+- Backend controls cart structure
+
+----------------------------------------------------
+ADD TO CART
+----------------------------------------------------
+1. Auth middleware identifies user
+2. Client sends productId + quantity
+3. Validate quantity >= 1
+4. Backend finds cart by userId
+
+CASE 1: Cart does NOT exist
+--------------------------------
+- Create new cart
+- Add product with quantity
+- Save cart
+- Response: cart created
+
+CASE 2: Cart EXISTS
+--------------------------------
+- Check if product exists in cart items
+
+  IF product exists:
+    - Increase quantity (old + new)
+
+  IF product does NOT exist:
+    - Push new product into items
+
+- Save cart - await cart.save()
+- Response: cart updated
+
+----------------------------------------------------
+GET CART
+----------------------------------------------------
+1. Auth middleware identifies user
+2. Backend finds cart by userId
+   - If not found → return empty cart
+3. Populate:
+   - items.product
+   - items.product.category
+4. Response: full cart with product + category data
+
+----------------------------------------------------
+UPDATE QUANTITY
+----------------------------------------------------
+1. Auth middleware identifies user
+2. Client sends productId + quantity
+3. Backend finds cart by userId
+   - If not found → error
+
+4. Backend finds product in cart
+   - If not found → error
+
+5. Decide based on quantity:
+
+   IF quantity < 0:
+     → Error (invalid request)
+
+   IF quantity === 0:
+     → Remove ONLY this product from cart items
+
+   IF quantity > 0:
+     → Replace item.quantity with new quantity
+
+6. Save cart document - await cart.save()
+7. Response: updated cart
+
+----------------------------------------------------
+MENTAL MODELS TO REMEMBER
+----------------------------------------------------
+
+- Frontend sends INTENT, backend manages STATE
+- ObjectIds are REFERENCES, populate replaces them at read time
+- Subdocuments require saving the parent document
+- Quantity logic always belongs to backend
+- JWT proves identity, not permissions
+- Cart is temporary, order is permanent
+
+====================================================
+END OF REFERENCE
+====================================================

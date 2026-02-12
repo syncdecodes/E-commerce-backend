@@ -1,0 +1,21 @@
+.populate() replaces an ObjectId with the actual document it points to
+=> .populate() replaces "all" the ids with the document
+
+
+.populate() expects schema paths
+means it wants the path defined in our schema not runtime data
+
+✅ Populate with selected fields (String-based)
+.populate("items.product", "name price image")
+Only fetch name, price, image from Product
+
+
+✅ Populate with options (advanced)
+.populate({
+  path: "items.product",
+  select: "name price",
+})
+Same result, more flexible.
+
+String-based populate works for ONE level only
+Nested references ALWAYS require object-based populate
