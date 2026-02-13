@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const transporter = require('../config/mail.config.js')
+const sendEmail = require('../config/mail.config.js')
+// const transporter = require('../config/mail.config.js')
 
 /** @type {import('mongoose').Model<any>} */
 const OTP = require('../models/otp.model.js')
@@ -39,10 +40,16 @@ const sendOtp = async (req, res) => {
         })
 
         // send otp to email
-        await transporter.sendMail({
-            from: process.env.EMAIL,
+        // await transporter.sendMail({
+        //     from: process.env.EMAIL,
+        //     to: email,
+        //     subject: 'OTP FOR REGISTERATION',
+        //     text: `YOUR OTP IS ${otp}`
+        // })
+
+        await sendEmail({
             to: email,
-            subject: 'OTP FOR REGISTERATION',
+            subject: 'OTP FOR REGISTRATION',
             text: `YOUR OTP IS ${otp}`
         })
 
@@ -170,8 +177,14 @@ const forgotPasswordSendOtp = async (req, res) => {
             expiresAt: new Date(Date.now() + 5 * 60 * 1000) // 5 min
         })
 
-        await transporter.sendMail({
-            from: process.env.EMAIL,
+        // await transporter.sendMail({
+        //     from: process.env.EMAIL,
+        //     to: email,
+        //     subject: 'OTP for Password Reset',
+        //     text: `Your OTP for password reset is ${otp}`
+        // })
+
+        await sendEmail({
             to: email,
             subject: 'OTP for Password Reset',
             text: `Your OTP for password reset is ${otp}`
