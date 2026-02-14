@@ -29,7 +29,7 @@ const sendEmail = async ({ to, subject, text }) => {
         }
         const res = await sgMail.send(msg)
         console.log('Sendgrid response', res[0].statusCode)
-        console.log("Message ID:", response[0].headers['x-message-id'])
+        console.log("Message ID:", res[0].headers['x-message-id'])
     } catch (error) {
         console.log('Sendgrid error:', error.response?.body || error.message)
     }
