@@ -49,7 +49,7 @@ const sendOtp = async (req, res) => {
 
         await sendEmail({
             to: email,
-            subject: 'OTP FOR REGISTRATION',
+            subject: `OTP FOR REGISTRATION ${Date.now()}`,
             text: `YOUR OTP IS ${otp}`
         })
 
