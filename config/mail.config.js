@@ -31,9 +31,8 @@ const sendEmail = async ({ to, subject, text }) => {
         console.log('Sendgrid response', res[0].statusCode)
         console.log("Message ID:", res[0].headers['x-message-id'])
     } catch (error) {
-        console.log('Sendgrid error:', error.response?.body || error.message)
+        console.log('Sendgrid error:')
     }
-
 }
 
 module.exports = sendEmail
