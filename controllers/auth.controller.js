@@ -50,7 +50,14 @@ const sendOtp = async (req, res) => {
         await sendEmail({
             to: email,
             subject: `OTP FOR REGISTRATION ${Date.now()}`,
-            text: `YOUR OTP IS ${otp}`
+            html: `
+                <div style="font-family: Arial;">
+                    <h2>DVL Store</h2>
+                    <p>Your OTP code is:</p>
+                    <h1>${otp}</h1>
+                    <p>This OTP expires in 5 minutes.</p>
+                </div>
+                `
         })
 
         res.status(200).json({ msg: `OTP to ${email} sent successfully` })
@@ -189,7 +196,14 @@ const forgotPasswordSendOtp = async (req, res) => {
         await sendEmail({
             to: email,
             subject: 'OTP for Password Reset',
-            text: `Your OTP for password reset is ${otp}`
+            html: `
+                <div style="font-family: Arial;">
+                    <h2>DVL Store</h2>
+                    <p>Your OTP for password reset is:</p>
+                    <h1>${otp}</h1>
+                    <p>This OTP expires in 5 minutes.</p>
+                </div>
+                `
         })
 
         res.status(200).json({ msg: 'OTP sent successfully to your email' })

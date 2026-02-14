@@ -19,14 +19,21 @@ const sgMail = require("@sendgrid/mail")
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-const sendEmail = async ({to, subject, text}) => {
-    const msg = {
-        to, 
-        from: process.env.EMAIL,
-        subject,
-        text
+const sendEmail = async ({ to, subject, text }) => {
+    try {
+        const msg = {
+            to,
+            from: process.env.EMAIL,
+            subject,
+            text
+        }
+        const res = await sgMail.send(msg)
+        console.log('Sendgrid response', res[0].statusCode)
+        console.log("Message ID:", response[0].headers['x-message-id'])
+    } catch (error) {
+        console.log('Sendgrid error:', error.response?.body || error.message)
     }
-    await sgMail.send(msg)
+
 }
 
 module.exports = sendEmail
