@@ -170,6 +170,8 @@ const forgotPasswordSendOtp = async (req, res) => {
 
         const otp = generateOtp()
 
+        await OTP.deleteMany({ email, type: 'forgot' })
+
         await OTP.create({
             email,
             otp,
